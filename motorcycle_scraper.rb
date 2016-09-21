@@ -10,26 +10,40 @@ nokoObj = Nokogiri::HTML(motorcycles_listing)
 
 motorcycle_name = []
 motorcycle_price=[]
+posted_on = []
 nokoObj.css(".rows").css(".row").css(".hdrlnk").map do |tags|
 	brand = tags.text
 	motorcycle_name.push(brand)
 end
 
-nokoObj.css(".rows").css(".row").css("time").map do |prix|
-	price = prix.text
-	motorcycle_price.push(price)
+nokoObj.css(".rows").css(".row").css(".l2").css(".price").map do |price|
+	if price
+		buy_at = price.text
+	else
+		buy_at = "N/A"
+	end
+	motorcycle_price.push(buy_at)
+end
+nokoObj.css(".rows").css(".row").css("time").map do |date|
+	if date
+		listing_date = date.text
+	else
+		listing_date = "N/A"
+	end
+	posted_on.push(listing_date)
 end
 
-motorcycles = Hash[motorcycle_name.zip motorcycle_price]
-puts motorcycles["Suzuki Sky wave scootor"]
+motorcycles = Hash[motorcycle_name.zip posted_on]
+
 #Pry.start(binding)
-CSV.open("motorcycles.csv", 'w', write_headers: :true, headers: ["Brand Name", "Price"]) do |write|
-	motorcycle_name.each do |vroum|
-		write << [vroum]
+CSV.open("motorcycles.csv", 'w', write_headers: :true, headers: ["Brand Name", "Date", "Price"]) do |write|
+	motorcycles.each do |vroum|
+		write << vroum
 	end
 end
-CSV.open("price.csv", 'w', write_headers: :true, headers: "Time") do |add|
-	motorcycle_price.each do |price|
-		add << [price]
+CSV.open("price.csv", 'w:UTF-8', write_headers: :true, headers: ["Price"]) do |price|
+	motorcycle_price.each do |tst|
+		puts tst
+		price << tst
 	end
 end
