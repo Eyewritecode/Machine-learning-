@@ -36,14 +36,16 @@ end
 motorcycles = Hash[motorcycle_name.zip posted_on]
 
 #Pry.start(binding)
-CSV.open("motorcycles.csv", 'w', write_headers: :true, headers: ["Brand Name", "Date", "Price"]) do |write|
+CSV.open("motorcycles.csv", 'w', write_headers: :true, headers: ["Brand Name", "Posted on", "Price"]) do |write|
 	motorcycles.each do |vroum|
 		write << vroum
 	end
 end
-CSV.open("price.csv", 'w:UTF-8', write_headers: :true, headers: ["Price"]) do |price|
+CSV.open("price.csv", 'w',write_headers: :true, headers: ["Price"]) do |price|
 	motorcycle_price.each do |tst|
-		puts tst
-		price << tst
+		if !tst.valid_encoding?
+			tst = tst.encode("ISO-8859-1", invalid: :replace, replace: "?").encode('UTF-8')
+		end
+		price << [tst]
 	end
 end
